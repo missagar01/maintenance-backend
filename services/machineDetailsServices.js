@@ -17,45 +17,56 @@ export const getMachineBySerial = async (serialNo) => {
 
 // 🟢 Update machine info
 export const updateMachine = async (serialNo, data) => {
-  const fields = [
-    "machine_name",
-    "purchase_date",
-    "purchase_price",
-    "vendor",
-    "model_no",
-    "warranty_expiration",
-    "manufacturer",
-    "department",
-    "location",
-    "initial_maintenance_date",
-    "notes",
-    "tag_no",
-    "user_allot",
-  ];
+  const fieldMap = {
+    machine_name: "machine_name",
+    model_no: "model_no",
+    manufacturer: "manufacturer",
+    department: "department",
+    location: "location",
+    purchase_date: "purchase_date",
+    purchase_price: "purchase_price",
+    vendor: "vendor",
+    warranty_expiration: "warranty_expiration",
+    initial_maintenance_date: "initial_maintenance_date",
+    notes: "notes",
+    tag_no: "tag_no",
+    user_allot: "user_allot"
+  };
 
   const updates = [];
   const values = [];
-  let idx = 1;
+  let i = 1;
 
-  for (const field of fields) {
-    if (data[field] !== undefined) {
-      updates.push(`${field} = $${idx++}`);
-      values.push(data[field]);
+  for (const key in data) {
+    if (fieldMap[key]) {
+      let value = data[key];
+
+      // Convert empty string → NULL
+      if (value === "" || value === undefined) {
+        value = null;
+      }
+
+      updates.push(`${fieldMap[key]} = $${i}`);
+      values.push(value);
+      i++;
     }
   }
 
   if (updates.length === 0) return false;
 
   values.push(serialNo);
+
   const query = `
     UPDATE form_responses
     SET ${updates.join(", ")}
-    WHERE LOWER(TRIM(serial_no)) = LOWER(TRIM($${idx}))
+    WHERE LOWER(TRIM(serial_no)) = LOWER(TRIM($${i}))
     RETURNING *;
   `;
+
   const result = await pool.query(query, values);
   return result.rowCount > 0;
 };
+
 
 // 🟢 Get maintenance history + analytics
 export const getMachineHistory = async (serialNo) => {
