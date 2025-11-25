@@ -2,30 +2,60 @@ import pool from "../config/db.js";
 
 export const fetchDropdownData = async (req, res) => {
   try {
-    // ✅ Use lowercase unquoted column names
-    const query = `
+    const { department } = req.query;
+
+    // 1️⃣ Fetch ALL dropdown data for global lists
+    const allQuery = `
       SELECT DISTINCT
         department,
         given_by,
         doer_name,
         task_status,
-        priority
-      FROM master;
+        priority,
+        department1
+      FROM master
     `;
+    const allResult = await pool.query(allQuery);
+    const allRows = allResult.rows;
 
-    const result = await pool.query(query);
-    const rows = result.rows;
+    // Global dropdowns (always visible)
+    const departments = [...new Set(allRows.map(r => r.department).filter(Boolean))];
+    const givenBy = [...new Set(allRows.map(r => r.given_by).filter(Boolean))];
+    const taskStatus = [...new Set(allRows.map(r => r.task_status).filter(Boolean))];
+    const priority = [...new Set(allRows.map(r => r.priority).filter(Boolean))];
 
-    // ✅ Deduplicate & clean values
-    const departments = [...new Set(rows.map(r => r.department).filter(Boolean))];
-    const givenBy = [...new Set(rows.map(r => r.given_by).filter(Boolean))];
-    const doerName = [...new Set(rows.map(r => r.doer_name).filter(Boolean))];
-    const taskStatus = [...new Set(rows.map(r => r.task_status).filter(Boolean))];
-    const priority = [...new Set(rows.map(r => r.priority).filter(Boolean))];
+    // 2️⃣ If no department selected → return ALL except Doer Name
+    if (!department) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          departments,
+          givenBy,
+          doerName: [],     // Doer is empty until department selected
+          taskStatus,
+          priority,
+        },
+      });
+    }
+
+    // 3️⃣ Filter ONLY doer_name by department1
+    const doerQuery = `
+      SELECT DISTINCT doer_name
+      FROM master
+      WHERE LOWER(department1) = LOWER($1)
+    `;
+    const doerResult = await pool.query(doerQuery, [department]);
+    const doerName = doerResult.rows.map(r => r.doer_name).filter(Boolean);
 
     res.status(200).json({
       success: true,
-      data: { departments, givenBy, doerName, taskStatus, priority },
+      data: {
+        departments,
+        givenBy,     // All values (not filtered)
+        doerName,    // Filtered by department1
+        taskStatus,  // All values
+        priority,    // All values
+      },
     });
   } catch (error) {
     console.error("Dropdown fetch error:", error);
