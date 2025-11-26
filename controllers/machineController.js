@@ -56,10 +56,22 @@ export const createMachine = async (req, res) => {
 
 export const fetchAllMachines = async (req, res) => {
   try {
-    const machines = await getAllMachines();
-    res.status(200).json({ success: true, data: machines });
+    const page = parseInt(req.query.page) || 1;
+    const limit = 50;
+    const offset = (page - 1) * limit;
+
+    const machines = await getAllMachines(limit, offset);
+
+    return res.status(200).json({
+      success: true,
+      data: machines,
+      page,
+      nextPage: machines.length === limit ? page + 1 : null,
+    });
   } catch (error) {
     console.error("Fetch error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+

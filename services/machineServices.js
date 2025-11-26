@@ -24,7 +24,7 @@ export const insertMachine = async (data) => {
 
 
 
-export const getAllMachines = async () => {
+export const getAllMachines = async (limit = 50, offset = 0) => {
   const query = `
     SELECT
       id,
@@ -46,9 +46,11 @@ export const getAllMachines = async () => {
       tag_no,
       user_allot
     FROM form_responses
-    ORDER BY id DESC;
+    ORDER BY id DESC
+    LIMIT $1 OFFSET $2;
   `;
-  const result = await pool.query(query);
+  const result = await pool.query(query, [limit, offset]);
   return result.rows;
 };
+
 
