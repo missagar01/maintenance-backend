@@ -15,6 +15,9 @@ import reportRoutes from "./routes/reportRoutes.js"
 import dashboardRoutes from "./routes/dashboardRoutes.js"
 import authRoutes from "./routes/authRoutes.js"
 import machineDetailsRoutes from "./routes/machineDetailsRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import doerRoutes from "./routes/doerRoutes.js";
+import departmentforsetttingRoutes from "./routes/departmentforsettingRoutes.js";
 
 
 dotenv.config();
@@ -45,6 +48,9 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/machine-details", machineDetailsRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/doer", doerRoutes);
+app.use("/api/departments-for-setting", departmentforsetttingRoutes);
 
 
 const PORT = process.env.PORT || 5050;
