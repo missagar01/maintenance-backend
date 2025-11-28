@@ -16,9 +16,7 @@ export const loginUser = async (req, res) => {
       id: user.id,
       name: user.username,
       role: user.role,
-      page: Array.isArray(user.page_access)
-        ? user.page_access.join(", ")
-        : user.page_access,
+      page_access: user.page_access, // ✅ send exact array
     };
 
     return res.status(200).json({ success: true, user: userData });
@@ -27,3 +25,4 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
