@@ -81,11 +81,11 @@ export const getDepartmentCostBreakdown = async (req, res) => {
   try {
     const query = `
       SELECT 
-        "Department" AS name, 
+        "machine_department" AS name, 
         SUM(COALESCE("Maintenance_Cost", 0)) AS cost
       FROM maintenance_task_assign
       WHERE "Actual_Date" IS NOT NULL
-      GROUP BY "Department"
+      GROUP BY "machine_department"
       ORDER BY cost DESC;
     `;
     const { rows } = await pool.query(query);

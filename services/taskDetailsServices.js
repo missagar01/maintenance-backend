@@ -42,7 +42,7 @@ export const getTasksByMachineAndSerial = async (taskNo, serialNo, taskType) => 
         "Frequency",
         "Description",
         "Priority",
-        "Department",
+        "doer_department",
         "Actual_Date" AS actual_date,
         "Delay",
         "Task_Status" AS task_status,
@@ -170,11 +170,11 @@ export const getPendingTasksByMachine = async (machineName, serialNo) => {
         "Machine_Name" AS machine_name,
         "Task_Type" AS task_type,
         "Task_Start_Date" AS task_start_date,
-        "Description",
+        "Description" AS description,
         "Need_Sound_Test" AS need_sound_test,
         "Temperature",
         "Require_Attachment" AS require_attachment,
-        "Doer_Name" AS department,        -- ✅ ALIAS HERE
+        "Doer_Name" AS doer_department,        -- ✅ ALIAS HERE
         "Given_By" AS given_by,
         "Machine_Area" AS machine_area
       FROM maintenance_task_assign
@@ -211,7 +211,7 @@ export const getCompletedTasksByMachine = async (machineName, serialNo) => {
         "Description" AS description,
         "Remarks" AS remarks,
         "Doer_Name" AS doer_name,
-        "Department" AS department,
+        "doer_department" AS doer_department,
         "Image_Link" AS image_link,
         "File_Name" AS file_name,
         "File_Type" AS file_type

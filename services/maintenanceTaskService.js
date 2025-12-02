@@ -20,10 +20,11 @@ export const insertMaintenanceTask = async (data) => {
       "Frequency",
       "Description",
       "Priority",
-      "Department"
+      "machine_department",  -- New column
+      "doer_department"      -- New column
     )
     VALUES (
-      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18
+      $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19
     )
     RETURNING *;
   `;
@@ -32,7 +33,6 @@ export const insertMaintenanceTask = async (data) => {
   let cleanDate = null;
   if (data.task_start_date) {
     const parts = data.task_start_date.split(/[\/\s:]/); 
-    // handles both "18/11/2025" or "18/11/2025 09:00:00"
     if (parts.length >= 3) {
       const [day, month, year] = parts;
       cleanDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
@@ -57,7 +57,8 @@ export const insertMaintenanceTask = async (data) => {
     data.frequency,
     data.description,
     data.priority,
-    data.department,
+    data.machine_department, // Changed from data.department
+    data.doer_department,    // New
   ];
 
   try {
@@ -69,7 +70,6 @@ export const insertMaintenanceTask = async (data) => {
   }
 };
 
-
 /**
  * ✅ Fetch all maintenance tasks
  */
@@ -79,7 +79,8 @@ export const getAllMaintenanceTasks = async () => {
       "Task_No", "Serial_No", "Machine_Name", "Given_By", "Doer_Name", 
       "Task_Type", "Machine_Area", "Part_Name", "Need_Sound_Test", 
       "Temperature", "Enable_Reminders", "Require_Attachment", 
-      "Task_Start_Date", "Frequency", "Description", "Priority", "Department"
+      "Task_Start_Date", "Frequency", "Description", "Priority", 
+      "Machine_Department", "Doer_Department"  -- Added
     FROM maintenance_task_assign
     ORDER BY id DESC;
   `;
@@ -101,3 +102,4 @@ export const getNextTaskNumber = async () => {
   const nextNum = lastNum + 1;
   return `TM-${String(nextNum).padStart(3, "0")}`;
 };
+

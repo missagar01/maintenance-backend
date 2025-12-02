@@ -18,6 +18,7 @@ import machineDetailsRoutes from "./routes/machineDetailsRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import doerRoutes from "./routes/doerRoutes.js";
 import departmentforsetttingRoutes from "./routes/departmentforsettingRoutes.js";
+import repairTaskRoutes from "./routes/repairTaskRoutes.js";
 
 
 dotenv.config();
@@ -58,6 +59,7 @@ app.use("/api/machine-details", machineDetailsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/doer", doerRoutes);
 app.use("/api/departments-for-setting", departmentforsetttingRoutes);
+app.use("/api/repair-tasks", repairTaskRoutes);
 
 
 const PORT = process.env.PORT || 5050;
